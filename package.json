@@ -1,0 +1,14 @@
+{
+  "name": "dockerize-node-app",
+  "version": "1.0.0",
+  "description": "This is an appication to test the process of dockerizing a simple Node JS application.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Dasun Wickramasooriya @dasunwickr",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
