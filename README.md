@@ -1,68 +1,138 @@
-# Setting Up the Node.js App (Without Docker)
+# Setting Up the Node.js App with Docker
 
-## Introduction
-This guide will help you set up and run a simple Node.js Express server without Docker. If you are new to Node.js, follow these steps carefully to get the application up and running.
+## Introduction  
+This guide will help you set up and run a Node.js Express server using Docker, including a MySQL database for a seamless development environment.
 
-## Cloning the Repository
-Start by cloning the project repository from GitHub:
+---
+
+## Cloning the Repository  
+Clone the project repository and switch to the `dockerized` branch containing the Docker setup:  
 ```sh
 git clone https://github.com/dasunwickr/dockerize-node-app.git
 cd dockerize-node-app
+git checkout dockerized
 ```
 
-Switch to the `without-docker` branch, which contains the base Node.js application:
-```sh
-git checkout without-docker
-```
+---
 
-## Installing Node.js and npm
-Before running the application, ensure that you have Node.js installed.
-- **Windows/macOS**: Download and install Node.js from [nodejs.org](https://nodejs.org/).
-- **Linux (Debian/Ubuntu)**:
+## Installing Docker and Docker Compose  
+Ensure Docker and Docker Compose are installed:  
+- **Windows/macOS**: Install [Docker Desktop](https://www.docker.com/products/docker-desktop).  
+- **Linux (Debian/Ubuntu)**:  
   ```sh
   sudo apt update
-  sudo apt install nodejs npm -y
+  sudo apt install docker.io docker-compose -y
+  sudo systemctl enable --now docker
   ```
 
-Verify installation:
+Verify installation:  
 ```sh
-node -v
-npm -v
+docker --version
+docker-compose --version
 ```
 
-## Installing Dependencies
-Once Node.js is installed, navigate to the project directory and install the necessary dependencies:
-```sh
-npm install
-```
-This will install all the packages listed in `package.json`.
+---
 
-## Running the Node.js Server
-Start the server by running:
-```sh
-npm start
+## Docker Compose Configuration  
+The `docker-compose.yml` automates the setup with:  
+- **Node.js App**: Built from the `Dockerfile`, mapped to host port 8080.  
+- **MySQL Database**: Preconfigured with credentials and a database.  
+
+```yaml
+version: '3.8'
+services:
+  app:
+    container_name: my_custom_app
+    build: .
+    ports:
+      - "8080:3000"
+    depends_on:
+      - db
+  db:
+    container_name: my_custom_db
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: testdb
 ```
 
-If successful, you should see an output like this:
+---
+
+## Running the Application  
+Start the containers in detached mode:  
 ```sh
-Server running on port 3000
+docker-compose up --build -d
 ```
 
-## Testing the Application
-Open your browser or use a tool like `curl` or Postman to visit:
+**Output**:  
 ```
-http://localhost:3000
+Creating network "dockerize-node-app_default" with the default driver
+Building app
+...
+Status: Downloaded newer image for mysql:latest
+Creating my_custom_db ... done
+Creating my_custom_app ... done
 ```
-You should see the response:
+
+---
+
+## Testing the Application  
+Access the Node.js app at:  
+```
+http://localhost:8080
+```  
+**Expected Response**:  
 ```
 Hello, Docker!
 ```
 
-## Stopping the Server
-To stop the running server, press `Ctrl + C` in the terminal.
+---
 
-## Next Steps
-Once you're comfortable running the app locally, you can move on to Dockerizing it by following the `dockerized` branch instructions.
+## Managing Containers  
+- **Stop Containers**:  
+  ```sh
+  docker-compose down
+  ```  
+- **View Running Containers**:  
+  ```sh
+  docker ps
+  ```  
+- **Inspect Logs**:  
+  ```sh
+  docker-compose logs app
+  ```
 
-Happy coding! 🚀
+---
 
+## Database Access  
+Connect to the MySQL database using:  
+- **Host**: `my_custom_db` (container name)  
+- **Port**: `3306`  
+- **Username**: `root`  
+- **Password**: `root`  
+- **Database**: `testdb`  
+
+Example connection via CLI:  
+```sh
+docker exec -it my_custom_db mysql -uroot -proot
+```
+
+---
+
+## Troubleshooting  
+- **Rebuild After Changes**:  
+  ```sh
+  docker-compose up --build
+  ```  
+- **Clean Volumes**:  
+  ```sh
+  docker-compose down -v
+  ```  
+
+---
+
+## Next Steps  
+Explore advanced configurations like environment variables, persistent storage, or integrating with other services.  
+
+**Happy containerizing!** 🐳
