@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  app:
+    container_name: my_custom_app
+    build: .
+    ports:
+      - "8080:3000"
+    depends_on:
+      - db
+  db:
+    container_name: my_custom_db
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: testdb
